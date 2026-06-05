@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>首爾大盤商 | 成員專區</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0e12;--sur:#17171e;--sur2:#1e1e28;--sur3:#26263a;--bdr:#2e2e42;
+  --acc:#a78bfa;--acc2:#7c3aed;--acc-dim:#2d1f5e;
+  --grn:#34d399;--grn-dim:#0d3d2a;--red:#f87171;--red-dim:#3d1010;
+  --amb:#fbbf24;--amb-dim:#3d2d06;--blu:#60a5fa;--blu-dim:#0d2547;
+  --txt:#e8e8f0;--txt2:#9090b0;--txt3:#5a5a7a;--r:10px;--rl:16px;
+}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:14px}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);padding:48px 40px;text-align:center;max-width:360px;width:100%}
+.login-logo{font-size:26px;font-weight:700;color:var(--acc);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--txt3);margin-bottom:12px}
+.login-role{display:inline-block;background:var(--grn-dim);color:var(--grn);font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:20px}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;color:var(--txt);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:.15s}
+.google-btn:hover{border-color:var(--acc)}
+.not-found{display:none;text-align:center;padding:20px}
+.not-found-icon{font-size:48px;margin-bottom:12px}
+/* APP */
+.app{display:none}
+.topbar{background:var(--sur);border-bottom:1px solid var(--bdr);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.brand{font-size:14px;font-weight:700;color:var(--acc)}
+.user-chip{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2)}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:.15s}
+.btn-ghost{background:var(--sur2);color:var(--txt2);border:1px solid var(--bdr)}.btn-ghost:hover{color:var(--txt)}
+.main{padding:20px;max-width:700px;margin:0 auto}
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--acc-dim),var(--sur2));border:1px solid var(--bdr);border-radius:var(--rl);padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.hero-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0}
+.hero-name{font-size:20px;font-weight:700}
+.hero-sub{font-size:12px;color:var(--txt3);margin-top:2px}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.kpi{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px}
+.kpi-label{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.kpi-val{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--sur2);padding:4px;border-radius:10px;margin-bottom:16px}
+.tab{flex:1;padding:7px;border-radius:7px;font-size:13px;cursor:pointer;color:var(--txt2);border:none;background:none;font-family:inherit;text-align:center;transition:.15s}
+.tab.active{background:var(--sur);color:var(--txt);font-weight:500}
+.sec{display:none}.sec.active{display:block}
+/* CARD */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.card-hdr{padding:12px 16px;border-bottom:1px solid var(--bdr);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+/* ORDER ITEM */
+.order-item{padding:14px 16px;border-bottom:1px solid var(--bdr)}
+.order-item:last-child{border-bottom:none}
+.order-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.order-name{font-size:14px;font-weight:500;color:var(--txt)}
+.order-amt{font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:var(--acc)}
+.order-meta{font-size:12px;color:var(--txt3)}
+.order-paid{font-size:12px;color:var(--grn);margin-top:2px}
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.bdg-grn{background:var(--grn-dim);color:var(--grn)}.bdg-red{background:var(--red-dim);color:var(--red)}
+.bdg-amb{background:var(--amb-dim);color:var(--amb)}.bdg-blu{background:var(--blu-dim);color:var(--blu)}
+.bdg-acc{background:var(--acc-dim);color:var(--acc)}
+/* SHIP ITEM */
+.ship-item{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.ship-item:last-child{border-bottom:none}
+/* PROG */
+.prog{height:4px;background:var(--sur3);border-radius:2px;overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s}
+/* EMPTY */
+.empty{text-align:center;padding:36px;color:var(--txt3);font-size:13px}
+@media(max-width:480px){.kpi-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">首爾大盤商</div>
+    <div class="login-sub">成員帳務查詢系統</div>
+    <div class="login-role">👤 成員專區</div>
+    <p style="font-size:12px;color:var(--txt3);margin-bottom:24px;line-height:1.7">請使用管理員登記的 Google 帳號登入<br>只能查看自己的訂單與付款狀態</p>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.7 0 6.7 5.4 2.6 13.2l7.8 6c1.9-5.6 7.1-9.7 13.6-9.7z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.4 28.7A14.5 14.5 0 019.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A23.9 23.9 0 000 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.5 0-11.7-4.1-13.6-9.7l-7.8 6.1C6.7 42.6 14.7 48 24 48z"/></svg>
+      以 Google 帳號登入
+    </button>
+    <div class="not-found" id="notFound">
+      <div class="not-found-icon">🚫</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:8px">找不到你的帳號</div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:16px">請聯絡管理員，確認你的 Google Email 已被加入系統</div>
+      <button class="btn btn-ghost" onclick="signOutUser()">換個帳號試試</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <span class="brand">首爾大盤商</span>
+    <div class="user-chip">
+      <div class="av" id="userAv" style="background:var(--acc-dim);color:var(--acc)">?</div>
+      <span id="userEmail" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button class="btn btn-ghost" onclick="signOutUser()" style="padding:4px 8px">登出</button>
+    </div>
+  </div>
+  <main class="main">
+    <div class="hero" id="hero">
+      <div class="hero-av" id="heroAv"></div>
+      <div><div class="hero-name" id="heroName"></div><div class="hero-sub" id="heroSub"></div></div>
+    </div>
+    <div class="kpi-row" id="kpiRow"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showSec('orders',this)">我的訂單</button>
+      <button class="tab" onclick="showSec('payments',this)">付款記錄</button>
+      <button class="tab" onclick="showSec('shipments',this)">到貨進度</button>
+    </div>
+    <div class="sec active" id="sec-orders"><div class="empty">載入中…</div></div>
+    <div class="sec" id="sec-payments"><div class="empty">載入中…</div></div>
+    <div class="sec" id="sec-shipments"><div class="empty">載入中…</div></div>
+  </main>
+</div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut as fbSignOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getFirestore,collection,onSnapshot,query} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+
+  // 🔧 請把這裡換成你的 Firebase 設定（見設定教學）
+ const firebaseConfig = { 
+  apiKey: "AIzaSyDImE2UNLhpyxczNJ1hqxuQoxozztdVnnM",
+  authDomain: "seoul-v1.firebaseapp.com",
+  projectId: "seoul-v1",
+  storageBucket: "seoul-v1.firebasestorage.app",
+  messagingSenderId: "917194409693",
+  appId: "1:917194409693:web:4d24db8d228ce24ece3d34",
+  measurementId: "G-PXBEHR7TS2"
+  };
+  // 🔧 管理員的 Google 帳號 Email（只有這個帳號能進後台）
+  const ADMIN_EMAIL = "kimhsieh1110@gmail.com";
+
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentMember=null;
+let DATA={members:[],products:[],orders:[],payments:[],shipments:[]};
+
+window.signInWithGoogle=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());}catch(e){console.error(e);}};
+window.signOutUser=()=>fbSignOut(auth);
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('app').style.display='none';
+    document.getElementById('notFound').style.display='none';
+    return;
+  }
+  document.getElementById('userEmail').textContent=user.email;
+  document.getElementById('userAv').textContent=user.displayName?user.displayName[0]:'?';
+  // Load all data then find member
+  startListeners(user.email);
+});
+
+function startListeners(email){
+  const cols=['members','products','orders','payments','shipments'];
+  let loaded=0;
+  cols.forEach(key=>{
+    onSnapshot(query(collection(db,key)),snap=>{
+      DATA[key]=snap.docs.map(d=>({id:d.id,...d.data()}));
+      loaded++;
+      if(loaded>=cols.length){
+        currentMember=DATA.members.find(m=>m.email&&m.email.toLowerCase()===email.toLowerCase());
+        if(currentMember){
+          document.getElementById('loginWrap').style.display='none';
+          document.getElementById('app').style.display='block';
+          renderAll();
+        }else{
+          document.getElementById('notFound').style.display='block';
+        }
+      }
+    });
+  });
+}
+
+function getDue(o){const p=DATA.products.find(x=>x.id===o.productId)||{ntd:0};return Math.round((o.qty||0)*(p.ntd||0));}
+function fmtM(n){return '$'+Math.round(n||0).toLocaleString();}
+function fmtD(s){return s?s.replace(/-/g,'/'):'—';}
+function bdg(s){const m={已入帳:'grn',已記帳:'blu',已到貨:'grn',已取貨:'grn',尚未結清:'red',未出貨:'red',待收回:'amb',運送中:'blu',清關中:'blu',部分到貨:'amb',未取貨:'red',已完成:'grn'};return `<span class="bdg bdg-${m[s]||'acc'}">${s}</span>`;}
+
+window.showSec=function(name,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
+};
+
+function renderAll(){
+  if(!currentMember)return;
+  const m=currentMember;
+  const COLORS=['#a78bfa','#34d399','#60a5fa','#fbbf24','#f87171','#c084fc'];
+  const idx={小蘇:0,Kim:1,小恩:2,Hua:3,Nono:4,雪糕:5};
+  const ci=idx[m.name]??Math.abs([...m.name].reduce((a,c)=>a+c.charCodeAt(0),0))%6;
+  const color=COLORS[ci];
+
+  // Hero
+  document.getElementById('heroAv').textContent=m.name[0];
+  document.getElementById('heroAv').style.background=color+'33';
+  document.getElementById('heroAv').style.color=color;
+  document.getElementById('heroName').textContent=`${m.name} 的帳務`;
+  document.getElementById('heroSub').textContent=`暱稱：${m.nick||m.name}`;
+
+  // My orders & payments
+  const myOrders=DATA.orders.filter(o=>o.memberId===m.id);
+  const myPayments=DATA.payments.filter(p=>p.memberId===m.id);
+  const totalDue=myOrders.reduce((a,o)=>a+getDue(o),0);
+  const totalPaid=myPayments.filter(p=>p.status==='已入帳').reduce((a,p)=>a+(Number(p.amount)||0),0);
+  const pct=totalDue?Math.min(100,Math.round(totalPaid/totalDue*100)):100;
+
+  // KPI
+  document.getElementById('kpiRow').innerHTML=`
+    <div class="kpi"><div class="kpi-label">總應付</div><div class="kpi-val" style="color:var(--acc)">${fmtM(totalDue)}</div></div>
+    <div class="kpi"><div class="kpi-label">已付</div><div class="kpi-val" style="color:var(--grn)">${fmtM(totalPaid)}</div></div>
+    <div class="kpi"><div class="kpi-label">待付</div><div class="kpi-val" style="color:${totalDue-totalPaid>0?'var(--red)':'var(--grn)'}">${fmtM(totalDue-totalPaid)}</div><div class="prog" style="margin-top:6px"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+
+  // Orders
+  const oSec=document.getElementById('sec-orders');
+  if(!myOrders.length){oSec.innerHTML='<div class="empty">目前沒有訂單記錄</div>';return;}
+  oSec.innerHTML=myOrders.map(o=>{
+    const p=DATA.products.find(x=>x.id===o.productId)||{name:'?',ntd:0,group:''};
+    const due=getDue(o);
+    const paid=myPayments.filter(pay=>pay.itemId===o.id).reduce((a,p)=>a+(Number(p.amount)||0),0);
+    const cleared=paid>=due&&due>0;
+    return `<div class="card"><div class="order-item">
+      <div class="order-top"><div><div class="order-name">${p.name}</div><div class="order-meta">${p.group||''} · 數量 ${o.qty||1}</div>${o.note?`<div class="order-meta" style="margin-top:2px">備註：${o.note}</div>`:''}</div><div class="order-amt">${fmtM(due)}</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center">
+        ${cleared?'<span class="bdg bdg-grn">✓ 已結清</span>':'<span class="bdg bdg-red">未結清</span>'}
+        ${bdg(o.pickup||'未取貨')}
+        ${o.proxyId?`<span class="bdg bdg-acc">代刷：${(DATA.members.find(x=>x.id===o.proxyId)||{name:'?'}).name}</span>`:''}
+      </div>
+      ${paid>0?`<div class="order-paid">已付：${fmtM(paid)}</div>`:''}
+    </div></div>`;
+  }).join('');
+
+  // Payments
+  const pSec=document.getElementById('sec-payments');
+  if(!myPayments.length){pSec.innerHTML='<div class="empty">目前沒有付款記錄</div>';}
+  else{
+    pSec.innerHTML=`<div class="card">${myPayments.map(p=>{
+      const o=DATA.orders.find(x=>x.id===p.itemId);const pr=o?DATA.products.find(x=>x.id===o.productId)||{name:'?'}:{name:'?'};const due=o?getDue(o):0;const cleared=(Number(p.amount)||0)>=due&&due>0;
+      return `<div class="order-item"><div class="order-top"><div><div class="order-name">${pr.name}${o?` x${o.qty||1}`:''}</div><div class="order-meta">${fmtD(p.date)} · ${p.note||''}</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:${(Number(p.amount)||0)>0?'var(--grn)':'var(--red)'}">${fmtM(p.amount)}</div><div style="margin-top:4px">${bdg(p.status)}</div></div></div>${cleared?'<div style="font-size:12px;color:var(--grn);margin-top:4px">✓ 此筆訂單已結清</div>':''}</div>`;
+    }).join('')}</div>`;
+  }
+
+  // Shipments — show all (relevant products only)
+  const myProductIds=new Set(myOrders.map(o=>o.productId));
+  const myShipments=DATA.shipments.filter(s=>myProductIds.has(s.productId));
+  const shSec=document.getElementById('sec-shipments');
+  if(!myShipments.length){shSec.innerHTML='<div class="empty">暫無到貨記錄</div>';}
+  else{
+    shSec.innerHTML=`<div class="card">${myShipments.map(s=>{
+      const p=DATA.products.find(x=>x.id===s.productId)||{name:'?'};
+      return `<div class="ship-item"><div><div style="font-weight:500;color:var(--txt)">${p.name}</div><div style="font-size:12px;color:var(--txt3);margin-top:2px">${s.note||''}</div>${s.expected?`<div style="font-size:12px;color:var(--txt3)">預計出貨：${fmtD(s.expected)}</div>`:''} ${s.actual?`<div style="font-size:12px;color:var(--grn)">實際到貨：${fmtD(s.actual)}</div>`:''}</div>${bdg(s.status||'未出貨')}</div>`;
+    }).join('')}</div>`;
+  }
+}
+</script>
+</body>
+</html>
