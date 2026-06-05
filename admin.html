@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>首爾大盤商 | 後台管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0e12;--sur:#17171e;--sur2:#1e1e28;--sur3:#26263a;
+  --bdr:#2e2e42;--bdr2:#3a3a55;
+  --acc:#a78bfa;--acc2:#7c3aed;--acc-dim:#2d1f5e;
+  --grn:#34d399;--grn-dim:#0d3d2a;
+  --red:#f87171;--red-dim:#3d1010;
+  --amb:#fbbf24;--amb-dim:#3d2d06;
+  --blu:#60a5fa;--blu-dim:#0d2547;
+  --txt:#e8e8f0;--txt2:#9090b0;--txt3:#5a5a7a;
+  --r:10px;--rl:16px;
+}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:14px}
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);padding:48px 40px;text-align:center;max-width:380px;width:100%}
+.login-logo{font-size:28px;font-weight:700;color:var(--acc);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--txt3);margin-bottom:32px}
+.login-role{display:inline-block;background:var(--acc-dim);color:var(--acc);font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:20px}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;background:var(--sur2);border:1px solid var(--bdr2);border-radius:10px;color:var(--txt);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:.15s}
+.google-btn:hover{background:var(--sur3);border-color:var(--acc)}
+/* APP */
+.app{display:none;min-height:100vh}
+.topbar{background:var(--sur);border-bottom:1px solid var(--bdr);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.brand{font-size:15px;font-weight:700;color:var(--acc)}
+.badge-admin{background:var(--acc-dim);color:var(--acc);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--txt2);border:none;background:none;font-family:inherit;transition:.15s}
+.nav-tab:hover{background:var(--sur2);color:var(--txt)}
+.nav-tab.active{background:var(--acc-dim);color:var(--acc);font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.user-chip{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2)}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--acc-dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc)}
+.main{padding:28px 32px;max-width:1200px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px}
+.sec-title{font-size:18px;font-weight:700}
+.sec-sub{font-size:12px;color:var(--txt3);margin-top:2px}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px 18px}
+.kpi-label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpi-val{font-size:24px;font-weight:700;font-family:'DM Mono',monospace}
+/* CARD / TABLE */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-bottom:20px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr)}
+.card-title{font-size:13px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--txt3);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;border-bottom:1px solid var(--bdr);font-size:13px;color:var(--txt2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.hr:hover td{background:rgba(167,139,250,.05)}
+.mono{font-family:'DM Mono',monospace;font-size:12px}
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.bdg-grn{background:var(--grn-dim);color:var(--grn)}
+.bdg-red{background:var(--red-dim);color:var(--red)}
+.bdg-amb{background:var(--amb-dim);color:var(--amb)}
+.bdg-blu{background:var(--blu-dim);color:var(--blu)}
+.bdg-acc{background:var(--acc-dim);color:var(--acc)}
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:.15s}
+.btn-pri{background:var(--acc2);color:#fff}.btn-pri:hover{background:#6d28d9}
+.btn-ghost{background:var(--sur2);color:var(--txt2);border:1px solid var(--bdr)}.btn-ghost:hover{color:var(--txt)}
+.btn-del{background:var(--red-dim);color:var(--red);border:1px solid #7f1d1d}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-icon{padding:5px;border-radius:6px;background:var(--sur2);border:1px solid var(--bdr);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;transition:.15s}
+.btn-icon:hover{color:var(--grn);border-color:var(--grn);background:#0d2e0d}
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px}
+.moverlay.open{display:flex}
+.modal{background:var(--sur);border:1px solid var(--bdr2);border-radius:var(--rl);padding:26px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.mtitle{font-size:16px;font-weight:700;margin-bottom:4px}
+.msub{font-size:12px;color:var(--txt3);margin-bottom:18px}
+.fg{margin-bottom:14px}
+.flbl{font-size:12px;color:var(--txt2);margin-bottom:5px;display:block;font-weight:500}
+.finp{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:13px;font-family:inherit;outline:none}
+.finp:focus{border-color:var(--acc)}
+select.finp option{background:var(--sur2)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr)}
+/* PROGRESS */
+.prog{height:4px;background:var(--sur3);border-radius:2px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s}
+/* INLINE SELECT */
+.isel{background:var(--sur2);border:1px solid var(--bdr);border-radius:6px;padding:3px 6px;color:var(--txt);font-size:12px;font-family:inherit;outline:none}
+.isel:focus{border-color:var(--acc)}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--sur3);border:1px solid var(--bdr2);border-radius:10px;padding:11px 16px;font-size:13px;z-index:9999;display:none;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{display:flex}
+/* AVATAR */
+.av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+/* CHIP */
+.chip{padding:3px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--bdr);background:var(--sur2);color:var(--txt2);transition:.15s}
+.chip.active{border-color:var(--acc);background:var(--acc-dim);color:var(--acc)}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.srch{background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:5px 10px;color:var(--txt);font-size:12px;font-family:inherit;outline:none;width:160px}
+.srch:focus{border-color:var(--acc)}
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--txt3)}
+/* MEMBER SUMMARY GRID */
+.mem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.mem-card{background:var(--sur2);border:1px solid var(--bdr);border-radius:var(--r);padding:14px}
+@media(max-width:768px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .nav-tabs{display:none}
+  .main{padding:16px}
+  .frow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">首爾大盤商</div>
+    <div class="login-sub">Team Group Buy Manager</div>
+    <div class="login-role">🔐 後台管理員</div>
+    <p style="font-size:12px;color:var(--txt3);margin-bottom:24px;line-height:1.6">請用管理員 Google 帳號登入<br>只有設定的管理員才能進入後台</p>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.7 0 6.7 5.4 2.6 13.2l7.8 6c1.9-5.6 7.1-9.7 13.6-9.7z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.4 28.7A14.5 14.5 0 019.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A23.9 23.9 0 000 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.5 0-11.7-4.1-13.6-9.7l-7.8 6.1C6.7 42.6 14.7 48 24 48z"/></svg>
+      以 Google 帳號登入
+    </button>
+    <p id="loginErr" style="color:var(--red);font-size:12px;margin-top:12px;display:none"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="brand">首爾大盤商</span>
+      <span class="badge-admin">後台</span>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="showTab('dashboard',this)">總覽</button>
+        <button class="nav-tab" onclick="showTab('orders',this)">訂單</button>
+        <button class="nav-tab" onclick="showTab('payments',this)">收款</button>
+        <button class="nav-tab" onclick="showTab('proxy',this)">代刷</button>
+        <button class="nav-tab" onclick="showTab('shipments',this)">到貨</button>
+        <button class="nav-tab" onclick="showTab('members',this)">成員</button>
+        <button class="nav-tab" onclick="showTab('products',this)">商品</button>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip"><div class="user-av" id="userAv">?</div><span id="userEmail"></span></div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">登出</button>
+    </div>
+  </header>
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="tab-dashboard">
+      <div class="sec-hdr">
+        <div><div class="sec-title">Dashboard</div><div class="sec-sub">帳務總覽（即時同步）</div></div>
+        <button class="btn btn-pri" onclick="openModal('addPaymentModal')">＋ 登記收款</button>
+      </div>
+      <div class="kpi-grid" id="kpiGrid"><div class="loading">載入中…</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">⏳ 未結清名單</span><button class="btn btn-ghost btn-sm" onclick="openModal('addPaymentModal')">＋ 收款</button></div>
+          <table><thead><tr><th>成員</th><th>商品</th><th>欠款</th><th></th></tr></thead><tbody id="unpaidTb"></tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">🚚 到貨進度</span></div>
+          <table><thead><tr><th>商品</th><th>狀態</th></tr></thead><tbody id="shipSumTb"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">👥 各成員結清狀況</span></div>
+        <div style="padding:16px" id="memSummary"></div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="tab-orders">
+      <div class="sec-hdr">
+        <div><div class="sec-title">訂單管理</div><div class="sec-sub">點 ✏️ 編輯任何訂單</div></div>
+        <button class="btn btn-pri" onclick="openModal('addOrderModal')">＋ 新增訂單</button>
+      </div>
+      <div class="filter-bar">
+        <span class="chip active" onclick="setChips(this,'orderChips');orderFilter='all';renderOrders()">全部</span>
+        <span class="chip" onclick="setChips(this,'orderChips');orderFilter='未取貨';renderOrders()">未取貨</span>
+        <span class="chip" onclick="setChips(this,'orderChips');orderFilter='已取貨';renderOrders()">已取貨</span>
+        <input class="srch" id="orderChips" placeholder="搜尋…" oninput="orderSearch=this.value;renderOrders()" style="width:160px;border-radius:8px">
+      </div>
+      <div class="card"><table><thead><tr><th>#</th><th>成員</th><th>商品</th><th>數量</th><th>應付</th><th>代刷</th><th>備註</th><th>取貨</th><th>操作</th></tr></thead><tbody id="ordersTb"></tbody></table></div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="tab-payments">
+      <div class="sec-hdr">
+        <div><div class="sec-title">收款管理</div></div>
+        <button class="btn btn-pri" onclick="openModal('addPaymentModal')">＋ 登記收款</button>
+      </div>
+      <div class="filter-bar">
+        <span class="chip active" onclick="setChips(this,'payChips');payFilter='all';renderPayments()">全部</span>
+        <span class="chip" onclick="setChips(this,'payChips');payFilter='已入帳';renderPayments()">已入帳</span>
+        <span class="chip" onclick="setChips(this,'payChips');payFilter='尚未結清';renderPayments()">未結清</span>
+      </div>
+      <div class="card"><table><thead><tr><th>#</th><th>成員</th><th>對應訂單</th><th>日期</th><th>金額</th><th>狀態</th><th>結清</th><th>備註</th><th>操作</th></tr></thead><tbody id="paymentsTb"></tbody></table></div>
+    </div>
+
+    <!-- PROXY -->
+    <div class="page" id="tab-proxy">
+      <div class="sec-hdr">
+        <div><div class="sec-title">代刷管理</div></div>
+        <button class="btn btn-pri" onclick="openModal('addProxyModal')">＋ 新增代刷</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px" id="proxySummary"></div>
+      <div class="card"><table><thead><tr><th>#</th><th>代刷人</th><th>受益人</th><th>商品</th><th>數量</th><th>NTD</th><th>狀態</th><th>備註</th><th>操作</th></tr></thead><tbody id="proxyTb"></tbody></table></div>
+    </div>
+
+    <!-- SHIPMENTS -->
+    <div class="page" id="tab-shipments">
+      <div class="sec-hdr">
+        <div><div class="sec-title">到貨進度</div></div>
+        <button class="btn btn-pri" onclick="openModal('addShipmentModal')">＋ 新增批次</button>
+      </div>
+      <div class="card"><table><thead><tr><th>#</th><th>商品</th><th>預計出貨</th><th>實際到貨</th><th>狀態</th><th>運費</th><th>分攤/人</th><th>備註</th><th>操作</th></tr></thead><tbody id="shipmentsTb"></tbody></table></div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="page" id="tab-members">
+      <div class="sec-hdr">
+        <div><div class="sec-title">成員管理</div><div class="sec-sub">新增成員後，他們才能用 Google 帳號登入前台</div></div>
+        <button class="btn btn-pri" onclick="openModal('addMemberModal')">＋ 新增成員</button>
+      </div>
+      <div class="card"><table><thead><tr><th>#</th><th>成員</th><th>暱稱</th><th>綁定 Google Email</th><th>應付</th><th>已付</th><th>狀態</th><th>操作</th></tr></thead><tbody id="membersTb"></tbody></table></div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="page" id="tab-products">
+      <div class="sec-hdr">
+        <div><div class="sec-title">商品管理</div></div>
+        <button class="btn btn-pri" onclick="openModal('addProductModal')">＋ 新增商品</button>
+      </div>
+      <div class="card"><table><thead><tr><th>#</th><th>商品</th><th>所屬團購</th><th>幣別</th><th>原幣</th><th>匯率</th><th>NTD</th><th>到貨</th><th>操作</th></tr></thead><tbody id="productsTb"></tbody></table></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ MODALS ══ -->
+<!-- ADD ORDER -->
+<div class="moverlay" id="addOrderModal"><div class="modal">
+  <div class="mtitle">新增訂單</div><div class="msub"></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">成員</label><select class="finp" id="ao-mem"></select></div>
+    <div class="fg"><label class="flbl">商品</label><select class="finp" id="ao-prd" onchange="calcAOAmt()"></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">數量</label><input type="number" class="finp" id="ao-qty" value="1" min="1" oninput="calcAOAmt()"></div>
+    <div class="fg"><label class="flbl">應付(自動)</label><input class="finp" id="ao-amt" readonly style="color:var(--grn)"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">代刷人</label><select class="finp" id="ao-proxy"></select></div>
+    <div class="fg"><label class="flbl">取貨狀態</label><select class="finp" id="ao-pickup"><option>未取貨</option><option>已取貨</option></select></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="ao-note" placeholder="例：秀奎碩(1)哲(2)"></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addOrderModal')">取消</button><button class="btn btn-pri" onclick="saveOrder()">儲存</button></div>
+</div></div>
+
+<!-- EDIT ORDER -->
+<div class="moverlay" id="editOrderModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯訂單</div><div class="msub"></div>
+  <input type="hidden" id="eo-id">
+  <div class="frow">
+    <div class="fg"><label class="flbl">成員</label><select class="finp" id="eo-mem"></select></div>
+    <div class="fg"><label class="flbl">商品</label><select class="finp" id="eo-prd" onchange="calcEOAmt()"></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">數量</label><input type="number" class="finp" id="eo-qty" min="1" oninput="calcEOAmt()"></div>
+    <div class="fg"><label class="flbl">應付(自動)</label><input class="finp" id="eo-amt" readonly style="color:var(--grn)"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">代刷人</label><select class="finp" id="eo-proxy"></select></div>
+    <div class="fg"><label class="flbl">取貨狀態</label><select class="finp" id="eo-pickup"><option>未取貨</option><option>已取貨</option></select></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="eo-note"></div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('orders','eo-id',()=>closeModal('editOrderModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editOrderModal')">取消</button>
+    <button class="btn btn-pri" onclick="updateOrder()">儲存</button>
+  </div>
+</div></div>
+
+<!-- ADD PAYMENT -->
+<div class="moverlay" id="addPaymentModal"><div class="modal">
+  <div class="mtitle">登記收款</div><div class="msub"></div>
+  <div class="fg"><label class="flbl">成員</label><select class="finp" id="ap-mem" onchange="updateAPItems()"></select></div>
+  <div class="fg"><label class="flbl">對應訂單</label><select class="finp" id="ap-item"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">日期</label><input type="date" class="finp" id="ap-date"></div>
+    <div class="fg"><label class="flbl">金額(NTD)</label><input type="number" class="finp" id="ap-amt" placeholder="0"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="ap-status"><option>已入帳</option><option>已記帳</option><option>尚未結清</option></select></div>
+    <div class="fg"><label class="flbl">備註</label><input class="finp" id="ap-note" placeholder="例：連同日巡場周"></div>
+  </div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addPaymentModal')">取消</button><button class="btn btn-pri" onclick="savePayment()">儲存</button></div>
+</div></div>
+
+<!-- EDIT PAYMENT -->
+<div class="moverlay" id="editPaymentModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯收款</div><div class="msub"></div>
+  <input type="hidden" id="ep-id">
+  <div class="fg"><label class="flbl">成員</label><select class="finp" id="ep-mem" onchange="updateEPItems()"></select></div>
+  <div class="fg"><label class="flbl">對應訂單</label><select class="finp" id="ep-item"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">日期</label><input type="date" class="finp" id="ep-date"></div>
+    <div class="fg"><label class="flbl">金額(NTD)</label><input type="number" class="finp" id="ep-amt"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="ep-status"><option>已入帳</option><option>已記帳</option><option>尚未結清</option></select></div>
+    <div class="fg"><label class="flbl">備註</label><input class="finp" id="ep-note"></div>
+  </div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('payments','ep-id',()=>closeModal('editPaymentModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editPaymentModal')">取消</button>
+    <button class="btn btn-pri" onclick="updatePayment()">儲存</button>
+  </div>
+</div></div>
+
+<!-- ADD PROXY -->
+<div class="moverlay" id="addProxyModal"><div class="modal">
+  <div class="mtitle">新增代刷</div><div class="msub"></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">代刷人</label><select class="finp" id="apr-payer"></select></div>
+    <div class="fg"><label class="flbl">受益人</label><select class="finp" id="apr-ben"></select></div>
+  </div>
+  <div class="fg"><label class="flbl">商品</label><select class="finp" id="apr-prd" onchange="calcAPRAmt()"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">數量</label><input type="number" class="finp" id="apr-qty" value="1" oninput="calcAPRAmt()"></div>
+    <div class="fg"><label class="flbl">實際匯率</label><input type="number" class="finp" id="apr-rate" step="0.0001" oninput="calcAPRAmt()"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">NTD(自動)</label><input class="finp" id="apr-ntd" readonly style="color:var(--grn)"></div>
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="apr-status"><option>待收回</option><option>已收回</option><option>部分收回</option></select></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="apr-note"></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addProxyModal')">取消</button><button class="btn btn-pri" onclick="saveProxy()">儲存</button></div>
+</div></div>
+
+<!-- EDIT PROXY -->
+<div class="moverlay" id="editProxyModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯代刷</div><div class="msub"></div>
+  <input type="hidden" id="epr-id">
+  <div class="frow">
+    <div class="fg"><label class="flbl">代刷人</label><select class="finp" id="epr-payer"></select></div>
+    <div class="fg"><label class="flbl">受益人</label><select class="finp" id="epr-ben"></select></div>
+  </div>
+  <div class="fg"><label class="flbl">商品</label><select class="finp" id="epr-prd" onchange="calcEPRAmt()"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">數量</label><input type="number" class="finp" id="epr-qty" oninput="calcEPRAmt()"></div>
+    <div class="fg"><label class="flbl">實際匯率</label><input type="number" class="finp" id="epr-rate" step="0.0001" oninput="calcEPRAmt()"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">NTD(自動)</label><input class="finp" id="epr-ntd" readonly style="color:var(--grn)"></div>
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="epr-status"><option>待收回</option><option>已收回</option><option>部分收回</option></select></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="epr-note"></div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('proxy','epr-id',()=>closeModal('editProxyModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editProxyModal')">取消</button>
+    <button class="btn btn-pri" onclick="updateProxy()">儲存</button>
+  </div>
+</div></div>
+
+<!-- ADD SHIPMENT -->
+<div class="moverlay" id="addShipmentModal"><div class="modal">
+  <div class="mtitle">新增到貨批次</div><div class="msub"></div>
+  <div class="fg"><label class="flbl">商品</label><select class="finp" id="as-prd"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">預計出貨</label><input type="date" class="finp" id="as-exp"></div>
+    <div class="fg"><label class="flbl">實際到貨</label><input type="date" class="finp" id="as-act"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="as-status"><option>未出貨</option><option>運送中</option><option>清關中</option><option>已到貨</option><option>已取貨</option></select></div>
+    <div class="fg"><label class="flbl">追蹤號</label><input class="finp" id="as-track"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">運費(NTD)</label><input type="number" class="finp" id="as-cost"></div>
+    <div class="fg"><label class="flbl">分攤人數</label><input type="number" class="finp" id="as-split"></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="as-note"></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addShipmentModal')">取消</button><button class="btn btn-pri" onclick="saveShipment()">儲存</button></div>
+</div></div>
+
+<!-- EDIT SHIPMENT -->
+<div class="moverlay" id="editShipmentModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯到貨批次</div><div class="msub"></div>
+  <input type="hidden" id="es-id">
+  <div class="fg"><label class="flbl">商品</label><select class="finp" id="es-prd"></select></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">預計出貨</label><input type="date" class="finp" id="es-exp"></div>
+    <div class="fg"><label class="flbl">實際到貨</label><input type="date" class="finp" id="es-act"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">狀態</label><select class="finp" id="es-status"><option>未出貨</option><option>運送中</option><option>清關中</option><option>已到貨</option><option>已取貨</option></select></div>
+    <div class="fg"><label class="flbl">追蹤號</label><input class="finp" id="es-track"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">運費(NTD)</label><input type="number" class="finp" id="es-cost"></div>
+    <div class="fg"><label class="flbl">分攤人數</label><input type="number" class="finp" id="es-split"></div>
+  </div>
+  <div class="fg"><label class="flbl">備註</label><input class="finp" id="es-note"></div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('shipments','es-id',()=>closeModal('editShipmentModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editShipmentModal')">取消</button>
+    <button class="btn btn-pri" onclick="updateShipment()">儲存</button>
+  </div>
+</div></div>
+
+<!-- ADD MEMBER -->
+<div class="moverlay" id="addMemberModal"><div class="modal">
+  <div class="mtitle">新增成員</div><div class="msub">新增後，成員可用對應的 Google 帳號登入前台</div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">姓名</label><input class="finp" id="am-name" placeholder="例：小蘇"></div>
+    <div class="fg"><label class="flbl">暱稱</label><input class="finp" id="am-nick"></div>
+  </div>
+  <div class="fg"><label class="flbl">綁定 Google Email（前台登入用）</label><input class="finp" id="am-email" placeholder="member@gmail.com" type="email"></div>
+  <div class="fg"><label class="flbl">聯絡方式（選填）</label><input class="finp" id="am-contact"></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addMemberModal')">取消</button><button class="btn btn-pri" onclick="saveMember()">儲存</button></div>
+</div></div>
+
+<!-- EDIT MEMBER -->
+<div class="moverlay" id="editMemberModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯成員</div><div class="msub"></div>
+  <input type="hidden" id="em-id">
+  <div class="frow">
+    <div class="fg"><label class="flbl">姓名</label><input class="finp" id="em-name"></div>
+    <div class="fg"><label class="flbl">暱稱</label><input class="finp" id="em-nick"></div>
+  </div>
+  <div class="fg"><label class="flbl">綁定 Google Email</label><input class="finp" id="em-email" type="email"></div>
+  <div class="fg"><label class="flbl">聯絡方式</label><input class="finp" id="em-contact"></div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('members','em-id',()=>closeModal('editMemberModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editMemberModal')">取消</button>
+    <button class="btn btn-pri" onclick="updateMember()">儲存</button>
+  </div>
+</div></div>
+
+<!-- ADD PRODUCT -->
+<div class="moverlay" id="addProductModal"><div class="modal">
+  <div class="mtitle">新增商品</div><div class="msub"></div>
+  <div class="fg"><label class="flbl">商品名稱</label><input class="finp" id="apd-name"></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">所屬團購</label><input class="finp" id="apd-group"></div>
+    <div class="fg"><label class="flbl">幣別</label><select class="finp" id="apd-cur"><option>TWD</option><option>JPY</option><option>CNY</option><option>USD</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">原幣單價</label><input type="number" class="finp" id="apd-price" oninput="calcAPDNtd()"></div>
+    <div class="fg"><label class="flbl">匯率</label><input type="number" class="finp" id="apd-rate" step="0.0001" oninput="calcAPDNtd()"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">NTD單價(自動)</label><input class="finp" id="apd-ntd" readonly style="color:var(--grn)"></div>
+    <div class="fg"><label class="flbl">到貨狀態</label><select class="finp" id="apd-status"><option>未出貨</option><option>運送中</option><option>部分到貨</option><option>已到貨</option><option>已取貨</option></select></div>
+  </div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal('addProductModal')">取消</button><button class="btn btn-pri" onclick="saveProduct()">儲存</button></div>
+</div></div>
+
+<!-- EDIT PRODUCT -->
+<div class="moverlay" id="editProductModal"><div class="modal">
+  <div class="mtitle">✏️ 編輯商品</div><div class="msub"></div>
+  <input type="hidden" id="epd-id">
+  <div class="fg"><label class="flbl">商品名稱</label><input class="finp" id="epd-name"></div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">所屬團購</label><input class="finp" id="epd-group"></div>
+    <div class="fg"><label class="flbl">幣別</label><select class="finp" id="epd-cur"><option>TWD</option><option>JPY</option><option>CNY</option><option>USD</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">原幣單價</label><input type="number" class="finp" id="epd-price" oninput="calcEPDNtd()"></div>
+    <div class="fg"><label class="flbl">匯率</label><input type="number" class="finp" id="epd-rate" step="0.0001" oninput="calcEPDNtd()"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flbl">NTD單價(自動)</label><input class="finp" id="epd-ntd" readonly style="color:var(--grn)"></div>
+    <div class="fg"><label class="flbl">到貨狀態</label><select class="finp" id="epd-status"><option>未出貨</option><option>運送中</option><option>部分到貨</option><option>已到貨</option><option>已取貨</option></select></div>
+  </div>
+  <div class="mfooter">
+    <button class="btn btn-del" onclick="confirmDelete('products','epd-id',()=>closeModal('editProductModal'))">刪除</button>
+    <button class="btn btn-ghost" onclick="closeModal('editProductModal')">取消</button>
+    <button class="btn btn-pri" onclick="updateProduct()">儲存</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut as fbSignOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getFirestore,collection,doc,getDocs,addDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+
+  // 🔧 請把這裡換成你的 Firebase 設定（見設定教學）
+  const firebaseConfig = {
+  apiKey: "AIzaSyDImE2UNLhpyxczNJ1hqxuQoxozztdVnnM",
+  authDomain: "seoul-v1.firebaseapp.com",
+  projectId: "seoul-v1",
+  storageBucket: "seoul-v1.firebasestorage.app",
+  messagingSenderId: "917194409693",
+  appId: "1:917194409693:web:4d24db8d228ce24ece3d34"
+  };
+  // 🔧 管理員的 Google 帳號 Email（只有這個帳號能進後台）
+  const ADMIN_EMAIL = "kimhsieh1110@gmail.com";
+
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+// ─── AUTH ───
+window.signInWithGoogle=async()=>{
+  try{
+    const r=await signInWithPopup(auth,new GoogleAuthProvider());
+    if(r.user.email!==ADMIN_EMAIL){
+      await fbSignOut(auth);
+      document.getElementById('loginErr').style.display='block';
+      document.getElementById('loginErr').textContent='此帳號不是管理員，無法登入後台';
+    }
+  }catch(e){console.error(e);}
+};
+window.signOut=()=>fbSignOut(auth);
+
+onAuthStateChanged(auth,user=>{
+  if(user&&user.email===ADMIN_EMAIL){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('userEmail').textContent=user.email;
+    document.getElementById('userAv').textContent=user.displayName?user.displayName[0]:'A';
+    startListeners();
+  }else{
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('app').style.display='none';
+  }
+});
+
+// ─── LIVE DATA ───
+let DATA={members:[],products:[],orders:[],payments:[],proxy:[],shipments:[]};
+const COLS={members:'members',products:'products',orders:'orders',payments:'payments',proxy:'proxy',shipments:'shipments'};
+
+function startListeners(){
+  Object.keys(COLS).forEach(key=>{
+    onSnapshot(query(collection(db,COLS[key])),snap=>{
+      DATA[key]=snap.docs.map(d=>({id:d.id,...d.data()}));
+      refreshAll();
+    });
+  });
+}
+function refreshAll(){
+  const active=document.querySelector('.page.active');
+  if(active)renderTab(active.id.replace('tab-',''));
+  renderDashboard();
+}
+
+// ─── HELPERS ───
+const COLORS=['#a78bfa','#34d399','#60a5fa','#fbbf24','#f87171','#c084fc'];
+function mColor(name){const idx={小蘇:0,Kim:1,小恩:2,Hua:3,Nono:4,雪糕:5};const i=idx[name]??Math.abs([...name].reduce((a,c)=>a+c.charCodeAt(0),0))%6;return COLORS[i];}
+function avHTML(name){const c=mColor(name);return `<div class="av" style="background:${c}33;color:${c}">${name?name[0]:'?'}</div>`;}
+function getMem(id){return DATA.members.find(m=>m.id===id)||{name:'?',nick:'?'};}
+function getPrd(id){return DATA.products.find(p=>p.id===id)||{name:'?',ntd:0,price:0,rate:1,currency:'?'};}
+function getDue(o){return Math.round((o.qty||0)*(getPrd(o.productId).ntd||0));}
+function fmtM(n){return '$'+Math.round(n||0).toLocaleString();}
+function fmtD(s){return s?s.replace(/-/g,'/'):'—';}
+function bdg(s){const m={已入帳:'grn',已記帳:'blu',已到貨:'grn',已收回:'grn',已取貨:'grn',尚未結清:'red',未出貨:'red',待收回:'amb',運送中:'blu',清關中:'blu',部分到貨:'amb',部分收回:'amb',未取貨:'red',已完成:'grn',進行中:'blu'};return `<span class="bdg bdg-${m[s]||'acc'}">${s}</span>`;}
+function editBtn(fn,id){return `<button class="btn-icon" onclick="${fn}('${id}')" title="編輯"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;}
+window.showToast=function(msg,ok=true){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.style.borderColor=ok?'var(--grn)':'var(--red)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);};
+
+// ─── NAV ───
+window.showTab=function(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  renderTab(name);
+};
+function renderTab(n){({dashboard:renderDashboard,orders:renderOrders,payments:renderPayments,proxy:renderProxy,shipments:renderShipments,members:renderMembers,products:renderProducts})[n]?.();}
+window.setChips=function(el,groupId){document.querySelectorAll(`#tab-${el.closest('.page').id.replace('tab-','')} .chip`).forEach(c=>c.classList.remove('active'));el.classList.add('active');};
+
+// ─── MODAL ───
+window.openModal=function(id){
+  document.getElementById(id).classList.add('open');
+  ({addOrderModal:initAO,addPaymentModal:initAP,addProxyModal:initAPR,addShipmentModal:initAS,addMemberModal:()=>{},addProductModal:()=>{}})[id]?.();
+};
+window.closeModal=function(id){document.getElementById(id).classList.remove('open');};
+document.querySelectorAll('.moverlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+function populateSel(id,data,vFn,lFn,blank=''){const s=document.getElementById(id);s.innerHTML=(blank?`<option value="">${blank}</option>`:'')+data.map(d=>`<option value="${vFn(d)}">${lFn(d)}</option>`).join('');}
+function setSel(id,val){const s=document.getElementById(id);if(s)[...s.options].forEach(o=>{if(o.value===val)s.value=val;});}
+
+// INIT ADD MODALS
+function initAO(){populateSel('ao-mem',DATA.members,m=>m.id,m=>m.name);populateSel('ao-prd',DATA.products,p=>p.id,p=>`${p.name}(${p.group||''})`);populateSel('ao-proxy',DATA.members,m=>m.id,m=>m.name,'無');calcAOAmt();}
+function initAP(){populateSel('ap-mem',DATA.members,m=>m.id,m=>m.name);document.getElementById('ap-mem').onchange=updateAPItems;updateAPItems();document.getElementById('ap-date').value=new Date().toISOString().slice(0,10);}
+function initAPR(){populateSel('apr-payer',DATA.members,m=>m.id,m=>m.name);populateSel('apr-ben',DATA.members,m=>m.id,m=>m.name);populateSel('apr-prd',DATA.products,p=>p.id,p=>p.name);calcAPRAmt();}
+function initAS(){populateSel('as-prd',DATA.products,p=>p.id,p=>p.name);}
+
+window.updateAPItems=function(){const mid=document.getElementById('ap-mem').value;populateSel('ap-item',DATA.orders.filter(o=>o.memberId===mid),o=>o.id,o=>`${getPrd(o.productId).name} x${o.qty} — ${fmtM(getDue(o))}`);};
+window.updateEPItems=function(){const mid=document.getElementById('ep-mem').value;populateSel('ep-item',DATA.orders.filter(o=>o.memberId===mid),o=>o.id,o=>`${getPrd(o.productId).name} x${o.qty}`);};
+window.calcAOAmt=function(){const p=getPrd(document.getElementById('ao-prd').value);const q=Number(document.getElementById('ao-qty').value)||1;document.getElementById('ao-amt').value=fmtM(q*p.ntd);};
+window.calcEOAmt=function(){const p=getPrd(document.getElementById('eo-prd').value);const q=Number(document.getElementById('eo-qty').value)||1;document.getElementById('eo-amt').value=fmtM(q*p.ntd);};
+window.calcAPRAmt=function(){const p=getPrd(document.getElementById('apr-prd').value);const q=Number(document.getElementById('apr-qty').value)||1;const rEl=document.getElementById('apr-rate');if(!rEl.value)rEl.value=p.rate;const r=Number(rEl.value)||p.rate;document.getElementById('apr-ntd').value=fmtM(q*p.price*r);};
+window.calcEPRAmt=function(){const p=getPrd(document.getElementById('epr-prd').value);const q=Number(document.getElementById('epr-qty').value)||1;const r=Number(document.getElementById('epr-rate').value)||p.rate;document.getElementById('epr-ntd').value=fmtM(q*p.price*r);};
+window.calcAPDNtd=function(){document.getElementById('apd-ntd').value=fmtM((Number(document.getElementById('apd-price').value)||0)*(Number(document.getElementById('apd-rate').value)||1));};
+window.calcEPDNtd=function(){document.getElementById('epd-ntd').value=fmtM((Number(document.getElementById('epd-price').value)||0)*(Number(document.getElementById('epd-rate').value)||1));};
+
+// ─── SAVES ───
+async function addDoc2(col,data){await addDoc(collection(db,col),{...data,createdAt:serverTimestamp()});showToast('已儲存');}
+async function updateDoc2(col,id,data){await updateDoc(doc(db,col,id),{...data,updatedAt:serverTimestamp()});showToast('已更新');}
+
+window.saveOrder=async function(){
+  await addDoc2('orders',{memberId:document.getElementById('ao-mem').value,productId:document.getElementById('ao-prd').value,qty:Number(document.getElementById('ao-qty').value)||1,proxyId:document.getElementById('ao-proxy').value,pickup:document.getElementById('ao-pickup').value,note:document.getElementById('ao-note').value});
+  closeModal('addOrderModal');
+};
+window.savePayment=async function(){
+  await addDoc2('payments',{memberId:document.getElementById('ap-mem').value,itemId:document.getElementById('ap-item').value,date:document.getElementById('ap-date').value,amount:Number(document.getElementById('ap-amt').value)||0,status:document.getElementById('ap-status').value,note:document.getElementById('ap-note').value});
+  closeModal('addPaymentModal');
+};
+window.saveProxy=async function(){
+  const pid=document.getElementById('apr-prd').value;const p=getPrd(pid);const r=Number(document.getElementById('apr-rate').value)||p.rate;
+  await addDoc2('proxy',{payerId:document.getElementById('apr-payer').value,beneficiaryId:document.getElementById('apr-ben').value,productId:pid,qty:Number(document.getElementById('apr-qty').value)||1,rate:r,status:document.getElementById('apr-status').value,note:document.getElementById('apr-note').value});
+  closeModal('addProxyModal');
+};
+window.saveShipment=async function(){
+  await addDoc2('shipments',{productId:document.getElementById('as-prd').value,expected:document.getElementById('as-exp').value,actual:document.getElementById('as-act').value,status:document.getElementById('as-status').value,tracking:document.getElementById('as-track').value,cost:Number(document.getElementById('as-cost').value)||0,split:Number(document.getElementById('as-split').value)||0,note:document.getElementById('as-note').value});
+  closeModal('addShipmentModal');
+};
+window.saveMember=async function(){
+  const name=document.getElementById('am-name').value.trim();if(!name)return;
+  await addDoc2('members',{name,nick:document.getElementById('am-nick').value.trim()||name,email:document.getElementById('am-email').value.trim().toLowerCase(),contact:document.getElementById('am-contact').value.trim()});
+  closeModal('addMemberModal');
+};
+window.saveProduct=async function(){
+  const name=document.getElementById('apd-name').value.trim();if(!name)return;
+  const price=Number(document.getElementById('apd-price').value)||0;const rate=Number(document.getElementById('apd-rate').value)||1;
+  await addDoc2('products',{name,group:document.getElementById('apd-group').value,currency:document.getElementById('apd-cur').value,price,rate,ntd:Math.round(price*rate),status:document.getElementById('apd-status').value});
+  closeModal('addProductModal');
+};
+
+// ─── EDIT OPENS ───
+window.openEditOrder=function(id){
+  const o=DATA.orders.find(x=>x.id===id);if(!o)return;
+  document.getElementById('eo-id').value=id;
+  populateSel('eo-mem',DATA.members,m=>m.id,m=>m.name);setSel('eo-mem',o.memberId);
+  populateSel('eo-prd',DATA.products,p=>p.id,p=>p.name);setSel('eo-prd',o.productId);
+  populateSel('eo-proxy',DATA.members,m=>m.id,m=>m.name,'無');setSel('eo-proxy',o.proxyId||'');
+  document.getElementById('eo-qty').value=o.qty;document.getElementById('eo-note').value=o.note||'';setSel('eo-pickup',o.pickup||'未取貨');calcEOAmt();
+  document.getElementById('editOrderModal').classList.add('open');
+};
+window.updateOrder=async function(){
+  const id=document.getElementById('eo-id').value;
+  await updateDoc2('orders',id,{memberId:document.getElementById('eo-mem').value,productId:document.getElementById('eo-prd').value,qty:Number(document.getElementById('eo-qty').value)||1,proxyId:document.getElementById('eo-proxy').value,pickup:document.getElementById('eo-pickup').value,note:document.getElementById('eo-note').value});
+  closeModal('editOrderModal');
+};
+window.openEditPayment=function(id){
+  const p=DATA.payments.find(x=>x.id===id);if(!p)return;
+  document.getElementById('ep-id').value=id;
+  populateSel('ep-mem',DATA.members,m=>m.id,m=>m.name);setSel('ep-mem',p.memberId);
+  document.getElementById('ep-mem').onchange=updateEPItems;updateEPItems();setTimeout(()=>setSel('ep-item',p.itemId),50);
+  document.getElementById('ep-date').value=p.date||'';document.getElementById('ep-amt').value=p.amount||0;setSel('ep-status',p.status||'已入帳');document.getElementById('ep-note').value=p.note||'';
+  document.getElementById('editPaymentModal').classList.add('open');
+};
+window.updatePayment=async function(){
+  const id=document.getElementById('ep-id').value;
+  await updateDoc2('payments',id,{memberId:document.getElementById('ep-mem').value,itemId:document.getElementById('ep-item').value,date:document.getElementById('ep-date').value,amount:Number(document.getElementById('ep-amt').value)||0,status:document.getElementById('ep-status').value,note:document.getElementById('ep-note').value});
+  closeModal('editPaymentModal');
+};
+window.openEditProxy=function(id){
+  const p=DATA.proxy.find(x=>x.id===id);if(!p)return;
+  document.getElementById('epr-id').value=id;
+  populateSel('epr-payer',DATA.members,m=>m.id,m=>m.name);setSel('epr-payer',p.payerId);
+  populateSel('epr-ben',DATA.members,m=>m.id,m=>m.name);setSel('epr-ben',p.beneficiaryId);
+  populateSel('epr-prd',DATA.products,p2=>p2.id,p2=>p2.name);setSel('epr-prd',p.productId);
+  document.getElementById('epr-qty').value=p.qty;document.getElementById('epr-rate').value=p.rate;setSel('epr-status',p.status);document.getElementById('epr-note').value=p.note||'';calcEPRAmt();
+  document.getElementById('editProxyModal').classList.add('open');
+};
+window.updateProxy=async function(){
+  const id=document.getElementById('epr-id').value;const p=getPrd(document.getElementById('epr-prd').value);const r=Number(document.getElementById('epr-rate').value)||p.rate;
+  await updateDoc2('proxy',id,{payerId:document.getElementById('epr-payer').value,beneficiaryId:document.getElementById('epr-ben').value,productId:document.getElementById('epr-prd').value,qty:Number(document.getElementById('epr-qty').value)||1,rate:r,status:document.getElementById('epr-status').value,note:document.getElementById('epr-note').value});
+  closeModal('editProxyModal');
+};
+window.openEditShipment=function(id){
+  const s=DATA.shipments.find(x=>x.id===id);if(!s)return;
+  document.getElementById('es-id').value=id;
+  populateSel('es-prd',DATA.products,p=>p.id,p=>p.name);setSel('es-prd',s.productId);
+  document.getElementById('es-exp').value=s.expected||'';document.getElementById('es-act').value=s.actual||'';setSel('es-status',s.status||'未出貨');document.getElementById('es-track').value=s.tracking||'';document.getElementById('es-cost').value=s.cost||0;document.getElementById('es-split').value=s.split||0;document.getElementById('es-note').value=s.note||'';
+  document.getElementById('editShipmentModal').classList.add('open');
+};
+window.updateShipment=async function(){
+  const id=document.getElementById('es-id').value;
+  await updateDoc2('shipments',id,{productId:document.getElementById('es-prd').value,expected:document.getElementById('es-exp').value,actual:document.getElementById('es-act').value,status:document.getElementById('es-status').value,tracking:document.getElementById('es-track').value,cost:Number(document.getElementById('es-cost').value)||0,split:Number(document.getElementById('es-split').value)||0,note:document.getElementById('es-note').value});
+  closeModal('editShipmentModal');
+};
+window.openEditMember=function(id){
+  const m=DATA.members.find(x=>x.id===id);if(!m)return;
+  document.getElementById('em-id').value=id;document.getElementById('em-name').value=m.name;document.getElementById('em-nick').value=m.nick||'';document.getElementById('em-email').value=m.email||'';document.getElementById('em-contact').value=m.contact||'';
+  document.getElementById('editMemberModal').classList.add('open');
+};
+window.updateMember=async function(){
+  const id=document.getElementById('em-id').value;
+  await updateDoc2('members',id,{name:document.getElementById('em-name').value,nick:document.getElementById('em-nick').value,email:document.getElementById('em-email').value.trim().toLowerCase(),contact:document.getElementById('em-contact').value});
+  closeModal('editMemberModal');
+};
+window.openEditProduct=function(id){
+  const p=DATA.products.find(x=>x.id===id);if(!p)return;
+  document.getElementById('epd-id').value=id;document.getElementById('epd-name').value=p.name;document.getElementById('epd-group').value=p.group||'';setSel('epd-cur',p.currency||'TWD');document.getElementById('epd-price').value=p.price||0;document.getElementById('epd-rate').value=p.rate||1;document.getElementById('epd-ntd').value=fmtM(p.ntd||0);setSel('epd-status',p.status||'未出貨');
+  document.getElementById('editProductModal').classList.add('open');
+};
+window.updateProduct=async function(){
+  const id=document.getElementById('epd-id').value;const price=Number(document.getElementById('epd-price').value)||0;const rate=Number(document.getElementById('epd-rate').value)||1;
+  await updateDoc2('products',id,{name:document.getElementById('epd-name').value,group:document.getElementById('epd-group').value,currency:document.getElementById('epd-cur').value,price,rate,ntd:Math.round(price*rate),status:document.getElementById('epd-status').value});
+  closeModal('editProductModal');
+};
+
+// ─── DELETE ───
+window.confirmDelete=async function(col,idElId,cb){
+  const id=document.getElementById(idElId).value;
+  if(!confirm('確定刪除？此操作不可復原'))return;
+  await deleteDoc(doc(db,col,id));showToast('已刪除');cb();
+};
+
+// ─── RENDER DASHBOARD ───
+let orderFilter='all',orderSearch='',payFilter='all';
+function renderDashboard(){
+  const totalDue=DATA.orders.reduce((a,o)=>a+getDue(o),0);
+  const totalPaid=DATA.payments.filter(p=>p.status==='已入帳').reduce((a,p)=>a+(Number(p.amount)||0),0);
+  const pending=DATA.proxy.filter(p=>p.status==='待收回').reduce((a,p)=>a+Math.round((p.qty||0)*(getPrd(p.productId).price||0)*(p.rate||0)),0);
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-label">總應收</div><div class="kpi-val" style="color:var(--acc)">${fmtM(totalDue)}</div></div>
+    <div class="kpi"><div class="kpi-label">已收款</div><div class="kpi-val" style="color:var(--grn)">${fmtM(totalPaid)}</div></div>
+    <div class="kpi"><div class="kpi-label">未結清</div><div class="kpi-val" style="color:var(--red)">${fmtM(totalDue-totalPaid)}</div><div class="prog"><div class="prog-fill" style="width:${totalDue?Math.min(100,totalPaid/totalDue*100):0}%;background:var(--grn)"></div></div></div>
+    <div class="kpi"><div class="kpi-label">代刷待收</div><div class="kpi-val" style="color:var(--amb)">${fmtM(pending)}</div></div>`;
+  const unpaid=DATA.payments.filter(p=>p.status==='尚未結清'&&!(Number(p.amount)>0));
+  document.getElementById('unpaidTb').innerHTML=unpaid.length
+    ?unpaid.map(p=>{const m=getMem(p.memberId);const o=DATA.orders.find(x=>x.id===p.itemId);const pr=o?getPrd(o.productId):{name:'?'};const due=o?getDue(o):0;
+      return `<tr class="hr"><td><div style="display:flex;align-items:center;gap:6px">${avHTML(m.name)}<span>${m.name}</span></div></td><td style="font-size:12px">${pr.name}</td><td class="mono" style="color:var(--red)">${fmtM(due)}</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('addPaymentModal')">收款</button></td></tr>`;
+    }).join('')
+    :`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--grn)">✓ 全部結清！</td></tr>`;
+  document.getElementById('shipSumTb').innerHTML=DATA.shipments.map(s=>`<tr class="hr"><td style="font-size:12px">${getPrd(s.productId).name}</td><td>${bdg(s.status)}</td></tr>`).join('');
+  document.getElementById('memSummary').innerHTML=`<div class="mem-grid">${DATA.members.map(m=>{
+    const due=DATA.orders.filter(o=>o.memberId===m.id).reduce((a,o)=>a+getDue(o),0);
+    const paid=DATA.payments.filter(p=>p.memberId===m.id&&p.status==='已入帳').reduce((a,p)=>a+(Number(p.amount)||0),0);
+    const pct=due?Math.min(100,Math.round(paid/due*100)):100;const c=mColor(m.name);
+    return `<div class="mem-card"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">${avHTML(m.name)}<span style="font-weight:600;font-size:13px">${m.name}</span></div><div style="font-size:11px;color:var(--txt3)">應付 ${fmtM(due)}</div><div style="font-size:11px;margin-bottom:6px">已付 <span style="color:var(--grn)">${fmtM(paid)}</span></div><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div><div style="font-size:11px;color:var(--txt3);text-align:right;margin-top:2px">${pct}%</div></div>`;
+  }).join('')}</div>`;
+}
+
+// ─── RENDER ORDERS ───
+function renderOrders(){
+  let rows=DATA.orders;
+  if(orderFilter!=='all')rows=rows.filter(o=>o.pickup===orderFilter);
+  if(orderSearch)rows=rows.filter(o=>{const m=getMem(o.memberId);const p=getPrd(o.productId);return m.name.includes(orderSearch)||p.name.includes(orderSearch);});
+  document.getElementById('ordersTb').innerHTML=rows.map((o,i)=>{
+    const m=getMem(o.memberId);const p=getPrd(o.productId);const proxy=o.proxyId?getMem(o.proxyId):{name:''};
+    return `<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td><div style="display:flex;align-items:center;gap:6px">${avHTML(m.name)}<span>${m.name}</span></div></td><td style="color:var(--txt)">${p.name}</td><td class="mono">${o.qty||1}</td><td class="mono" style="color:var(--acc)">${fmtM(getDue(o))}</td><td>${proxy.name?`<span class="bdg bdg-acc">${proxy.name}</span>`:''}</td><td style="font-size:12px;color:var(--txt3)">${o.note||'—'}</td>
+    <td><span class="bdg ${o.pickup==='已取貨'?'bdg-grn':'bdg-red'}" style="cursor:pointer" onclick="togglePickup('${o.id}','${o.pickup}')">${o.pickup||'未取貨'}</span></td>
+    <td>${editBtn('openEditOrder',o.id)}</td></tr>`;
+  }).join('');
+}
+window.togglePickup=async function(id,cur){await updateDoc(doc(db,'orders',id),{pickup:cur==='已取貨'?'未取貨':'已取貨'});};
+
+// ─── RENDER PAYMENTS ───
+function renderPayments(){
+  let rows=DATA.payments;
+  if(payFilter!=='all')rows=rows.filter(p=>p.status===payFilter);
+  document.getElementById('paymentsTb').innerHTML=rows.map((p,i)=>{
+    const m=getMem(p.memberId);const o=DATA.orders.find(x=>x.id===p.itemId);const pr=o?getPrd(o.productId):{name:'?'};const due=o?getDue(o):0;const cleared=(Number(p.amount)||0)>=due&&due>0;
+    return `<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td><div style="display:flex;align-items:center;gap:6px">${avHTML(m.name)}<span>${m.name}</span></div></td><td style="font-size:12px;color:var(--txt2)">${pr.name}${o?` x${o.qty||1}`:''}</td><td>${fmtD(p.date)}</td><td class="mono" style="color:${(Number(p.amount)||0)>0?'var(--grn)':'var(--red)'}">${fmtM(p.amount)}</td><td>${bdg(p.status)}</td><td>${cleared?'<span class="bdg bdg-grn">✓ 已結清</span>':'<span class="bdg bdg-red">未結清</span>'}</td><td style="font-size:12px;color:var(--txt3)">${p.note||'—'}</td><td>${editBtn('openEditPayment',p.id)}</td></tr>`;
+  }).join('');
+}
+
+// ─── RENDER PROXY ───
+function renderProxy(){
+  const payers=[...new Set(DATA.proxy.map(p=>p.payerId))];
+  document.getElementById('proxySummary').innerHTML=payers.map(pid=>{
+    const m=getMem(pid);const recs=DATA.proxy.filter(p=>p.payerId===pid);
+    const total=recs.reduce((a,p)=>a+Math.round((p.qty||0)*(getPrd(p.productId).price||0)*(p.rate||0)),0);
+    const pending=recs.filter(p=>p.status==='待收回').reduce((a,p)=>a+Math.round((p.qty||0)*(getPrd(p.productId).price||0)*(p.rate||0)),0);
+    const c=mColor(m.name);
+    return `<div class="mem-card"><div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">${avHTML(m.name)}<span style="font-weight:600">${m.name} 代刷彙總</span></div><div style="font-size:12px;display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--txt2)">代刷總額</span><span class="mono">${fmtM(total)}</span></div><div style="font-size:12px;display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--grn)">已收回</span><span class="mono" style="color:var(--grn)">${fmtM(total-pending)}</span></div><div style="font-size:12px;display:flex;justify-content:space-between"><span style="color:var(--amb)">待收回</span><span class="mono" style="color:var(--amb)">${fmtM(pending)}</span></div><div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:${total?Math.round((total-pending)/total*100):0}%;background:${c}"></div></div></div>`;
+  }).join('');
+  document.getElementById('proxyTb').innerHTML=DATA.proxy.map((p,i)=>{
+    const payer=getMem(p.payerId);const ben=getMem(p.beneficiaryId);const pr=getPrd(p.productId);const ntd=Math.round((p.qty||0)*(pr.price||0)*(p.rate||0));
+    return `<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td><div style="display:flex;align-items:center;gap:6px">${avHTML(payer.name)}<span>${payer.name}</span></div></td><td><div style="display:flex;align-items:center;gap:6px">${avHTML(ben.name)}<span>${ben.name}</span></div></td><td style="color:var(--txt)">${pr.name}</td><td class="mono">${p.qty||1}</td><td class="mono" style="color:var(--acc)">${fmtM(ntd)}</td><td><span class="bdg ${p.status==='已收回'?'bdg-grn':'bdg-amb'}" style="cursor:pointer" onclick="toggleProxy('${p.id}','${p.status}')">${p.status}</span></td><td style="font-size:12px;color:var(--txt3)">${p.note||'—'}</td><td>${editBtn('openEditProxy',p.id)}</td></tr>`;
+  }).join('');
+}
+window.toggleProxy=async function(id,cur){await updateDoc(doc(db,'proxy',id),{status:cur==='待收回'?'已收回':'待收回'});};
+
+// ─── RENDER SHIPMENTS ───
+function renderShipments(){
+  const opts=['未出貨','運送中','清關中','已到貨','已取貨'];
+  document.getElementById('shipmentsTb').innerHTML=DATA.shipments.map((s,i)=>{
+    const p=getPrd(s.productId);const pp=s.split>0?Math.round((s.cost||0)/s.split):0;
+    return `<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td style="color:var(--txt)">${p.name}</td><td>${fmtD(s.expected)}</td><td>${fmtD(s.actual)}</td>
+    <td><select class="isel" onchange="updateShipStatus('${s.id}',this.value)">${opts.map(o=>`<option${o===s.status?' selected':''}>${o}</option>`).join('')}</select></td>
+    <td class="mono">${s.cost?fmtM(s.cost):'免運'}</td><td class="mono" style="color:var(--acc)">${pp?fmtM(pp):'—'}</td><td style="font-size:12px;color:var(--txt3)">${s.note||''}</td><td>${editBtn('openEditShipment',s.id)}</td></tr>`;
+  }).join('');
+}
+window.updateShipStatus=async function(id,val){await updateDoc(doc(db,'shipments',id),{status:val});};
+
+// ─── RENDER MEMBERS ───
+function renderMembers(){
+  document.getElementById('membersTb').innerHTML=DATA.members.map((m,i)=>{
+    const due=DATA.orders.filter(o=>o.memberId===m.id).reduce((a,o)=>a+getDue(o),0);
+    const paid=DATA.payments.filter(p=>p.memberId===m.id&&p.status==='已入帳').reduce((a,p)=>a+(Number(p.amount)||0),0);
+    return `<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td><div style="display:flex;align-items:center;gap:8px">${avHTML(m.name)}<div><div style="font-weight:500;color:var(--txt)">${m.name}</div><div style="font-size:11px;color:var(--txt3)">${m.id}</div></div></div></td><td>${m.nick||'—'}</td><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3)">${m.email||'<span style="color:var(--red)">未設定</span>'}</td><td class="mono" style="color:var(--acc)">${fmtM(due)}</td><td class="mono" style="color:var(--grn)">${fmtM(paid)}</td><td>${paid>=due&&due>0?bdg('已完成'):bdg('尚未結清')}</td><td>${editBtn('openEditMember',m.id)}</td></tr>`;
+  }).join('');
+}
+
+// ─── RENDER PRODUCTS ───
+function renderProducts(){
+  document.getElementById('productsTb').innerHTML=DATA.products.map((p,i)=>`<tr class="hr"><td style="color:var(--txt3);font-size:11px">${i+1}</td><td style="color:var(--txt);font-weight:500">${p.name}</td><td style="font-size:12px;color:var(--txt3)">${p.group||'—'}</td><td><span class="bdg bdg-blu">${p.currency||'TWD'}</span></td><td class="mono">${(p.price||0).toLocaleString()}</td><td class="mono" style="color:var(--txt3)">${p.rate||1}</td><td class="mono" style="color:var(--acc);font-weight:600">${fmtM(p.ntd)}</td><td>${bdg(p.status||'未出貨')}</td><td>${editBtn('openEditProduct',p.id)}</td></tr>`).join('');
+}
+
+</script>
+</body>
+</html>
